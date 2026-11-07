@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Panda's Project Speed Wish 🐼</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-display: 'Fredoka', 'Inter', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+    body {
+      font-family: var(--font-body);
+      background: radial-gradient(circle at 20% 20%, #fdf2f8 0%, #fce7f3 35%, #e0f2fe 75%, #dcfce7 100%);
+      overflow-x: hidden;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    h1, h2, h3, .font-cute {
+      font-family: var(--font-display);
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+    @keyframes earWiggleLeft {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-12deg); }
+      75% { transform: rotate(6deg); }
+    }
+    @keyframes earWiggleRight {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(12deg); }
+      75% { transform: rotate(-6deg); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.7); opacity: 0; }
+      70% { transform: scale(1.06); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes missRipple {
+      0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.95; }
+      100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+    }
+    @keyframes missTextFloat {
+      0% { transform: translate(-50%, 0) scale(0.8); opacity: 1; }
+      100% { transform: translate(-50%, -36px) scale(1.05); opacity: 0; }
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    .animate-float {
+      animation: floatSlow 3.5s ease-in-out infinite;
+    }
+    .ear-left {
+      transform-origin: 65px 55px;
+      animation: earWiggleLeft 2.8s ease-in-out infinite;
+    }
+    .ear-right {
+      transform-origin: 135px 55px;
+      animation: earWiggleRight 2.8s ease-in-out infinite;
+    }
+    .pop-in {
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    #akdomBtn {
+      transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.16s ease;
+      will-change: transform;
+      touch-action: none;
+    }
+    .miss-ring {
+      position: fixed;
+      width: 38px;
+      height: 38px;
+      border: 3px dashed #f43f5e;
+      border-radius: 9999px;
+      pointer-events: none;
+      z-index: 60;
+      animation: missRipple 0.55s ease-out forwards;
+    }
+    .miss-label {
+      position: fixed;
+      pointer-events: none;
+      z-index: 65;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: #e11d48;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 2px 8px;
+      border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.18);
+      border: 1px solid #fecdd3;
+      white-space: nowrap;
+      animation: missTextFloat 0.85s ease-out forwards;
+    }
+    .confetti-piece {
+      position: fixed;
+      top: -20px;
+      z-index: 80;
+      pointer-events: none;
+      animation: confettiFall linear forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center p-3 sm:p-6 relative overflow-hidden">
+
+  <!-- Decorative Floating Background Elements -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+    <div class="absolute top-6 left-4 text-3xl sm:text-4xl opacity-40 animate-float" style="animation-delay: 0s;">🎋</div>
+    <div class="absolute top-14 right-6 text-2xl sm:text-3xl opacity-40 animate-float" style="animation-delay: 1.1s;">🐾</div>
+    <div class="absolute bottom-16 left-8 text-2xl sm:text-3xl opacity-40 animate-float" style="animation-delay: 0.6s;">🌸</div>
+    <div class="absolute bottom-10 right-8 text-3xl sm:text-4xl opacity-40 animate-float" style="animation-delay: 1.7s;">🎋</div>
+  </div>
+
+  <!-- Top Utility Bar -->
+  <header class="w-full max-w-md flex items-center justify-between z-20 px-2 pt-1">
+    <div class="flex items-center gap-2 bg-white/80 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-sm border border-pink-100">
+      <span class="text-lg">🐼</span>
+      <span class="font-cute text-sm font-semibold text-slate-700">Panda Portal v2.0</span>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <div id="missCounterBadge" class="bg-amber-50/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-amber-200 text-xs font-semibold text-amber-800 flex items-center gap-1.5">
+        <span>🎯 Missed Taps:</span>
+        <span id="missCountValue" class="font-cute text-sm text-rose-600 font-bold">0</span>
+      </div>
+      <button id="soundToggleBtn" type="button" aria-label="Toggle Sound Effects" class="bg-white/80 hover:bg-white backdrop-blur-md p-2 rounded-full shadow-sm border border-pink-100 text-slate-700 transition active:scale-95">
+        <span id="soundIcon">🔊</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Card Container -->
+  <main class="w-full max-w-md my-auto z-10 py-2">
+    <!-- QUESTION VIEW -->
+    <section id="questionView" class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-pink-200/80 p-5 sm:p-7 text-center relative transition-all duration-300">
+      
+      <!-- Cute Mood Pill -->
+      <div class="inline-flex items-center gap-1.5 bg-gradient-to-r from-pink-100 via-rose-100 to-amber-100 text-rose-700 px-3.5 py-1 rounded-full text-xs font-semibold mb-3 shadow-inner">
+        <span id="moodEmoji">✨</span>
+        <span id="moodStatusText">Official Project Speed Inquiry</span>
+      </div>
+
+      <!-- Interactive SVG Cute Panda -->
+      <div class="relative w-36 h-36 sm:w-40 sm:h-40 mx-auto mb-2 flex items-center justify-center">
+        <!-- Speech Bubble -->
+        <div id="pandaSpeechBubble" class="absolute -top-3 -right-4 sm:-right-8 bg-slate-800 text-white font-cute text-xs px-3 py-1.5 rounded-2xl rounded-bl-none shadow-md z-20 transition-all duration-200 max-w-[165px] text-left">
+          "Ki re Panda, Akdom e click korbi toh? Dekhi koto aim tor! 🤭"
+        </div>
+
+        <svg id="pandaSvg" viewBox="0 0 200 200" class="w-full h-full drop-shadow-md">
+          <!-- Soft Shadow -->
+          <ellipse cx="100" cy="182" rx="52" ry="10" fill="rgba(15, 23, 42, 0.08)" />
+          
+          <!-- Body -->
+          <ellipse cx="100" cy="148" rx="46" ry="34" fill="#1e293b" />
+          <ellipse cx="100" cy="152" rx="30" ry="24" fill="#ffffff" />
+          
+          <!-- Cute Feet -->
+          <ellipse cx="66" cy="174" rx="15" ry="11" fill="#0f172a" transform="rotate(-10 66 174)" />
+          <circle cx="66" cy="175" r="5" fill="#fda4af" />
+          <ellipse cx="134" cy="174" rx="15" ry="11" fill="#0f172a" transform="rotate(10 134 174)" />
+          <circle cx="134" cy="175" r="5" fill="#fda4af" />
+
+          <!-- Ears -->
+          <g class="ear-left">
+            <circle cx="56" cy="48" r="20" fill="#0f172a" />
+            <circle cx="56" cy="48" r="10" fill="#fda4af" opacity="0.6" />
+          </g>
+          <g class="ear-right">
+            <circle cx="144" cy="48" r="20" fill="#0f172a" />
+            <circle cx="144" cy="48" r="10" fill="#fda4af" opacity="0.6" />
+          </g>
+
+          <!-- Head -->
+          <ellipse cx="100" cy="92" rx="56" ry="48" fill="#ffffff" stroke="#1e293b" stroke-width="4" />
+
+          <!-- Rosy Cheeks -->
+          <ellipse id="cheekLeft" cx="62" cy="104" rx="11" ry="6.5" fill="#fb7185" opacity="0.55" />
+          <ellipse id="cheekRight" cx="138" cy="104" rx="11" ry="6.5" fill="#fb7185" opacity="0.55" />
+
+          <!-- Eye Patches -->
+          <ellipse cx="75" cy="86" rx="16" ry="19" fill="#0f172a" transform="rotate(-14 75 86)" />
+          <ellipse cx="125" cy="86" rx="16" ry="19" fill="#0f172a" transform="rotate(14 125 86)" />
+
+          <!-- Pupils (Dynamic tracking) -->
+          <g id="pupilsGroup">
+            <circle cx="76" cy="84" r="6.5" fill="#ffffff" />
+            <circle cx="78" cy="82" r="3" fill="#0f172a" />
+            <circle cx="74" cy="80" r="1.8" fill="#ffffff" />
+
+            <circle cx="124" cy="84" r="6.5" fill="#ffffff" />
+            <circle cx="126" cy="82" r="3" fill="#0f172a" />
+            <circle cx="122" cy="80" r="1.8" fill="#ffffff" />
+          </g>
+
+          <!-- Cute Wink/Laugh Eyes (Hidden initially, shown on dodge) -->
+          <g id="laughEyesGroup" class="hidden">
+            <path d="M 66 86 Q 75 76 84 86" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+            <path d="M 116 86 Q 125 76 134 86" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+          </g>
+
+          <!-- Nose -->
+          <ellipse cx="100" cy="99" rx="7" ry="5" fill="#0f172a" />
+          <ellipse cx="98" cy="97.5" rx="2.5" ry="1.2" fill="#64748b" />
+
+          <!-- Mouth -->
+          <path id="pandaMouth" d="M 92 106 Q 100 113 108 106" fill="none" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round" />
+          <path id="pandaTongue" d="M 96 109 Q 100 119 104 109 Z" fill="#fb7185" class="hidden" />
+
+          <!-- Bamboo Shoot in Paw -->
+          <g transform="translate(132, 118) rotate(22)">
+            <rect x="0" y="0" width="7" height="34" rx="3" fill="#22c55e" stroke="#15803d" stroke-width="2" />
+            <line x1="0" y1="11" x2="7" y2="11" stroke="#15803d" stroke-width="2" />
+            <line x1="0" y1="22" x2="7" y2="22" stroke="#15803d" stroke-width="2" />
+            <path d="M 7 8 Q 18 2 14 13 Z" fill="#22c55e" />
+          </g>
+
+          <!-- Paws -->
+          <ellipse id="leftPaw" cx="62" cy="136" rx="13" ry="10" fill="#0f172a" transform="rotate(20 62 136)" />
+          <ellipse id="rightPaw" cx="138" cy="136" rx="13" ry="10" fill="#0f172a" transform="rotate(-20 138 136)" />
+        </svg>
+      </div>
+
+      <!-- The Main Question -->
+      <h1 class="font-cute text-2xl sm:text-3xl font-bold text-slate-800 leading-snug mb-2 px-1">
+        Panda do you wish to your project complete faster
+      </h1>
+      <p id="subPromptText" class="text-xs sm:text-sm text-slate-500 mb-5">
+        College er eto project lekha baki... bhebe chinte click koris! 📝
+      </p>
+
+      <!-- Interactive Button Playground Arena -->
+      <div id="buttonArena" class="relative w-full h-44 sm:h-48 bg-gradient-to-b from-pink-50/70 to-emerald-50/60 rounded-2xl border border-dashed border-pink-200 flex items-center justify-center p-4 overflow-visible">
+        
+        <div class="flex items-center justify-center gap-5 sm:gap-8 w-full relative z-10">
+          <!-- AKDOM BUTTON (The Dodger) -->
+          <button
+            id="akdomBtn"
+            type="button"
+            class="font-cute bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-base sm:text-lg px-6 py-3 rounded-2xl shadow-lg shadow-emerald-500/25 border-b-4 border-emerald-700 flex items-center gap-2 select-none cursor-pointer"
+          >
+            <span>Akdom</span>
+            <span class="text-lg">🚀</span>
+          </button>
+
+          <!-- NO BUTTON (The Real Winner) -->
+          <button
+            id="noBtn"
+            type="button"
+            class="font-cute bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 active:scale-95 text-white font-bold text-base sm:text-lg px-7 py-3 rounded-2xl shadow-lg shadow-rose-500/25 border-b-4 border-rose-700 flex items-center gap-2 transition-all duration-200 cursor-pointer"
+          >
+            <span>No</span>
+            <span class="text-lg">😴</span>
+          </button>
+        </div>
+
+        <!-- Subtle Arena Floor Label -->
+        <span id="arenaHint" class="absolute bottom-2 left-0 right-0 text-[11px] text-slate-400 pointer-events-none">
+          Tap a button above • 100% normal buttons, promise 🤞
+        </span>
+      </div>
+
+      <!-- Funny Calibration Status Log -->
+      <div id="calibrationBox" class="mt-4 bg-slate-50 rounded-xl p-2.5 border border-slate-200/80 text-xs text-slate-600 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 text-left">
+          <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+          <span id="statusLogText">Touch screen & mouse calibration: <strong class="text-slate-800">Perfectly Normal</strong></span>
+        </div>
+        <span id="accuracyBadge" class="font-mono text-[11px] bg-white px-2 py-0.5 rounded-md border border-slate-200 text-slate-700 shrink-0">
+          Aim: 100%
+        </span>
+      </div>
+    </section>
+
+    <!-- RESULT VIEW (When "No" is clicked) -->
+    <section id="resultView" class="hidden bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-emerald-300 p-6 sm:p-8 text-center relative pop-in">
+      <div class="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 px-3.5 py-1 rounded-full text-xs font-bold mb-3">
+        <span>🎉</span>
+        <span>OFFICIAL PANDA CONFESSION RECORDED</span>
+      </div>
+
+      <!-- Celebrating Chill Panda SVG -->
+      <div class="w-36 h-36 mx-auto mb-3">
+        <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-md animate-float">
+          <ellipse cx="100" cy="182" rx="55" ry="10" fill="rgba(15, 23, 42, 0.08)" />
+          <!-- Ears -->
+          <circle cx="56" cy="48" r="20" fill="#0f172a" />
+          <circle cx="144" cy="48" r="20" fill="#0f172a" />
+          <!-- Body -->
+          <ellipse cx="100" cy="148" rx="48" ry="35" fill="#1e293b" />
+          <ellipse cx="100" cy="152" rx="32" ry="25" fill="#ffffff" />
+          <!-- Head -->
+          <ellipse cx="100" cy="92" rx="56" ry="48" fill="#ffffff" stroke="#1e293b" stroke-width="4" />
+          <!-- Cool Sunglasses -->
+          <rect x="52" y="72" width="40" height="24" rx="6" fill="#0f172a" />
+          <rect x="108" y="72" width="40" height="24" rx="6" fill="#0f172a" />
+          <line x1="92" y1="80" x2="108" y2="80" stroke="#0f172a" stroke-width="5" />
+          <line x1="45" y1="78" x2="52" y2="80" stroke="#0f172a" stroke-width="4" />
+          <line x1="148" y1="80" x2="155" y2="78" stroke="#0f172a" stroke-width="4" />
+          <!-- Lens Glare -->
+          <line x1="60" y1="77" x2="72" y2="90" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" />
+          <line x1="116" y1="77" x2="128" y2="90" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" />
+          <!-- Cheeks -->
+          <ellipse cx="58" cy="106" rx="11" ry="6" fill="#fb7185" opacity="0.65" />
+          <ellipse cx="142" cy="106" rx="11" ry="6" fill="#fb7185" opacity="0.65" />
+          <!-- Nose & Big Happy Grin -->
+          <ellipse cx="100" cy="100" rx="7" ry="5" fill="#0f172a" />
+          <path d="M 86 108 Q 100 124 114 108 Z" fill="#e11d48" stroke="#0f172a" stroke-width="3" />
+          <!-- Sleeping Zzz -->
+          <text x="148" y="42" font-family="Fredoka, sans-serif" font-size="18" font-weight="bold" fill="#6366f1">Zzz</text>
+        </svg>
+      </div>
+
+      <h2 class="font-cute text-2xl sm:text-3xl font-bold text-slate-800 mb-2">
+        Jantam Panda! 🐼✍️
+      </h2>
+      <p class="text-base sm:text-lg font-semibold text-rose-600 mb-2 leading-relaxed font-cute">
+        "Somoi ki waste korchis likhte bos, jadughar thori magic kore sob project gayab kore dibo!" 🪄📚
+      </p>
+      <p class="text-xs sm:text-sm text-slate-600 mb-4 leading-relaxed">
+        Nijei toh <span class="font-bold text-rose-600">"No"</span> select korli! Ebar phone rekhe kagoj-kolom niye college er project gulo likhte bos Madam! 😤📝
+      </p>
+
+      <!-- Fun Certificate Receipt -->
+      <div class="bg-amber-50/90 border-2 border-amber-200 rounded-2xl p-4 mb-5 text-left shadow-inner">
+        <div class="flex items-center justify-between border-b border-amber-200 pb-2 mb-2.5">
+          <span class="font-cute font-bold text-amber-900 text-sm">📜 Official Panda Speed Report</span>
+          <span class="text-xs bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-full font-semibold">Verified</span>
+        </div>
+        <div class="space-y-1.5 text-xs sm:text-sm text-slate-700">
+          <div class="flex justify-between">
+            <span>Panda-r Answer:</span>
+            <span class="font-bold text-rose-600">NO (Abar likhte bos! ✍️)</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Akdom-er pashe angul phoskechhe:</span>
+            <span id="finalSlipCount" class="font-bold text-slate-900">0 times</span>
+          </div>
+          <div class="flex justify-between">
+            <span>College Project Status:</span>
+            <span class="font-bold text-emerald-700">No Magic • Chupchap Likhe Fel 📚</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button
+          id="tryAgainBtn"
+          type="button"
+          class="font-cute bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>🔄 Dara, Abar "Akdom" Tipbo Try Kori!</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-md text-center z-10 pb-1">
+    <p class="text-xs text-slate-500 font-medium">
+      Made with 🎋 & mischief for <span class="font-semibold text-rose-600">Panda</span>
+    </p>
+  </footer>
+
+  <script>
+    (function () {
+      const akdomBtn = document.getElementById('akdomBtn');
+      const noBtn = document.getElementById('noBtn');
+      const buttonArena = document.getElementById('buttonArena');
+      const missCountValue = document.getElementById('missCountValue');
+      const pandaSpeechBubble = document.getElementById('pandaSpeechBubble');
+      const statusLogText = document.getElementById('statusLogText');
+      const accuracyBadge = document.getElementById('accuracyBadge');
+      const arenaHint = document.getElementById('arenaHint');
+      const subPromptText = document.getElementById('subPromptText');
+      const moodEmoji = document.getElementById('moodEmoji');
+      const moodStatusText = document.getElementById('moodStatusText');
+      const pupilsGroup = document.getElementById('pupilsGroup');
+      const laughEyesGroup = document.getElementById('laughEyesGroup');
+      const pandaTongue = document.getElementById('pandaTongue');
+      const questionView = document.getElementById('questionView');
+      const resultView = document.getElementById('resultView');
+      const finalSlipCount = document.getElementById('finalSlipCount');
+      const tryAgainBtn = document.getElementById('tryAgainBtn');
+      const soundToggleBtn = document.getElementById('soundToggleBtn');
+      const soundIcon = document.getElementById('soundIcon');
+
+      let missCount = 0;
+      let offsetX = 0;
+      let offsetY = 0;
+      let soundEnabled = true;
+      let audioCtx = null;
+      let laughTimer = null;
+      let lastDodgeTime = 0;
+
+      const gaslightExcuses = [
+        "Ki re Panda! Button chhere khali jaygay tipchis keno? 🤣",
+        "Oho! Angul phoske gelo naki? Akdom-e toh lagloi na! 🤭",
+        "Chokhe ghum naki re Panda? 2mm pashe click korechis! 😴",
+        "Button kintu ekdom norenni, tor aim-tai baje! 🤥",
+        "Eto college project likhe angul betha hoye geche mone hoy! ✍️",
+        "Arre issh! Ektu-r jonno miss hoye gelo, arekbar try kor! 😜",
+        "Ebar pakka Akdom-e lagbe Panda, bhalo kore aim kor! 🎯",
+        "Screen-e bamboo-r tel lege ache naki? Bar bar slip korche! 🎋",
+        "Ki re Madam, ekta chhotto Akdom button tipte parchis na? 😂",
+        "Arektu fast tap kor Panda, ei toh prai legei gechilo! 🐾",
+        "10 bar hoye gelo tao Akdom-e angul lagate parli na?! 🤭",
+        "Hya re Panda, Akdom button-ta ki aaj saradin dhorbi naki? 🤣"
+      ];
+
+      const missPopupLabels = [
+        "Ishh miss holo! 😜",
+        "Pashe tipchis keno! 💨",
+        "Angul slip korlo! 🐾",
+        "2mm baki chhilo! 🤭",
+        "Kothay tipchis Panda? 🎯",
+        "Aim baje! 😂",
+        "Button norenni, tui miss korli! 🤥"
+      ];
+
+      const calibrationLogs = [
+        "Touch Report: <strong class='text-rose-600'>Panda button-er baire click koreche!</strong>",
+        "Panda Paw Sensor: <strong class='text-amber-700'>College project-er bhoye angul kapche</strong>",
+        "Button Status: <strong class='text-emerald-700'>Button ek jaygatei ache (Sotti bolchi 🤞)</strong>",
+        "Aim Check: <strong class='text-indigo-600'>Choshma pore Akdom-e try kor Panda...</strong>",
+        "Speed Test: <strong class='text-rose-600'>Arektu fast tap korle Akdom-e lege jabe!</strong>"
+      ];
+
+      function initAudio() {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      function playBoingSound() {
+        if (!soundEnabled) return;
+        try {
+          initAudio();
+          if (!audioCtx) return;
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(680, now + 0.09);
+          osc.frequency.exponentialRampToValueAtTime(440, now + 0.16);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.17);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.18);
+        } catch (e) {
+          // Ignore audio context restrictions
+        }
+      }
+
+      function playWinSound() {
+        if (!soundEnabled) return;
+        try {
+          initAudio();
+          if (!audioCtx) return;
+          const notes = [523.25, 659.25, 783.99, 1046.5];
+          notes.forEach((freq, idx) => {
+            const now = audioCtx.currentTime + idx * 0.09;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.16, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.29);
+          });
+        } catch (e) {
+          // Ignore audio context restrictions
+        }
+      }
+
+      soundToggleBtn.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+        if (soundEnabled) playBoingSound();
+      });
+
+      function spawnMissIndicator(clientX, clientY) {
+        if (!clientX && !clientY) return;
+        const ring = document.createElement('div');
+        ring.className = 'miss-ring';
+        ring.style.left = clientX + 'px';
+        ring.style.top = clientY + 'px';
+        document.body.appendChild(ring);
+
+        const label = document.createElement('div');
+        label.className = 'miss-label';
+        label.textContent = missPopupLabels[missCount % missPopupLabels.length];
+        label.style.left = clientX + 'px';
+        label.style.top = (clientY - 18) + 'px';
+        document.body.appendChild(label);
+
+        setTimeout(() => {
+          ring.remove();
+          label.remove();
+        }, 900);
+      }
+
+      function triggerPandaLaugh() {
+        pupilsGroup.classList.add('hidden');
+        laughEyesGroup.classList.remove('hidden');
+        pandaTongue.classList.remove('hidden');
+        if (laughTimer) clearTimeout(laughTimer);
+        laughTimer = setTimeout(() => {
+          pupilsGroup.classList.remove('hidden');
+          laughEyesGroup.classList.add('hidden');
+          pandaTongue.classList.add('hidden');
+        }, 650);
+      }
+
+      function slideAkdomAway(clientX, clientY, isTapOrClick) {
+        const now = performance.now();
+        if (now - lastDodgeTime < 45 && !isTapOrClick) return;
+        lastDodgeTime = now;
+
+        const arenaRect = buttonArena.getBoundingClientRect();
+        const btnRect = akdomBtn.getBoundingClientRect();
+        const btnCenterX = btnRect.left + btnRect.width / 2;
+        const btnCenterY = btnRect.top + btnRect.height / 2;
+
+        // Calculate vector away from pointer/tap, but keep it a subtle "just missed it!" slide on mobile tap
+        // and a cheeky slide away on desktop hover
+        let dx = btnCenterX - (clientX || btnCenterX);
+        let dy = btnCenterY - (clientY || btnCenterY);
+        const dist = Math.hypot(dx, dy) || 1;
+        dx /= dist;
+        dy /= dist;
+
+        // Add playful angle variation so it feels organic and cheeky
+        const angleJitter = (Math.random() - 0.5) * 1.1;
+        const cosA = Math.cos(angleJitter);
+        const sinA = Math.sin(angleJitter);
+        const rotX = dx * cosA - dy * sinA;
+        const rotY = dx * sinA + dy * cosA;
+
+        // Slide distance: subtle enough on mobile tap (42-64px) to look like you barely missed clicking it,
+        // and brisk (55-80px) on desktop hover so the cursor never catches it
+        const stepDistance = isTapOrClick ? (46 + Math.random() * 20) : (58 + Math.random() * 26);
+
+        let nextX = offsetX + rotX * stepDistance;
+        let nextY = offsetY + rotY * stepDistance;
+
+        // Constrain within safe bounds around the arena so the button never goes off-screen
+        const maxOffsetX = Math.max(55, (arenaRect.width / 2) - (btnRect.width / 2) - 8);
+        const maxOffsetY = Math.max(42, (arenaRect.height / 2) - (btnRect.height / 2) - 8);
+
+        // If pushing against a boundary, hop to the opposite side of the finger/cursor
+        if (Math.abs(nextX) > maxOffsetX) {
+          nextX = -offsetX * 0.65 + (Math.random() - 0.5) * 36;
+          nextX = Math.max(-maxOffsetX, Math.min(maxOffsetX, nextX));
+        }
+        if (Math.abs(nextY) > maxOffsetY) {
+          nextY = -offsetY * 0.65 + (Math.random() - 0.5) * 28;
+          nextY = Math.max(-maxOffsetY, Math.min(maxOffsetY, nextY));
+        }
+
+        // Ensure it moved at least 36px from its current spot so the user's tap always misses
+        if (Math.hypot(nextX - offsetX, nextY - offsetY) < 34) {
+          nextX = offsetX >= 0 ? Math.max(-maxOffsetX, offsetX - 48) : Math.min(maxOffsetX, offsetX + 48);
+          nextY = offsetY >= 0 ? Math.max(-maxOffsetY, offsetY - 34) : Math.min(maxOffsetY, offsetY + 34);
+        }
+
+        offsetX = nextX;
+        offsetY = nextY;
+
+        const slightTilt = ((Math.random() - 0.5) * 8).toFixed(1);
+        akdomBtn.style.transform = `translate3d(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px, 0) rotate(${slightTilt}deg)`;
+
+        // Increment miss counter and update funny gaslighting UI
+        missCount++;
+        missCountValue.textContent = String(missCount);
+        playBoingSound();
+        triggerPandaLaugh();
+
+        if (clientX && clientY) {
+          spawnMissIndicator(clientX, clientY);
+        }
+
+        // Update speech bubble & status logs
+        pandaSpeechBubble.textContent = `"${gaslightExcuses[(missCount - 1) % gaslightExcuses.length]}"`;
+        statusLogText.innerHTML = calibrationLogs[(missCount - 1) % calibrationLogs.length];
+
+        const fakeAim = Math.max(0, 99 - missCount * 7);
+        accuracyBadge.textContent = `Aim: ${fakeAim}%`;
+
+        if (missCount === 3) {
+          moodEmoji.textContent = '🤭';
+          moodStatusText.textContent = 'Panda Aim Check: Bar Bar Miss Hocche!';
+          arenaHint.textContent = 'Button sorche? Motei na, tor angul-i baire porche! 😉';
+        } else if (missCount === 6) {
+          moodEmoji.textContent = '😂';
+          moodStatusText.textContent = 'Arektu Cheshta Kor Panda, Ebar Lagbe!';
+          arenaHint.textContent = 'Bhalo kore dekhe Akdom-er upor tap kor! 🎯';
+        } else if (missCount === 10) {
+          moodEmoji.textContent = '🐼';
+          moodStatusText.textContent = '10 Bar Miss! Ta-o Hal Chharis Na!';
+          subPromptText.textContent = '10 bar try koreo Akdom-e laglo na? Arekbar try korbi naki? 🤭';
+        } else if (missCount >= 13) {
+          moodEmoji.textContent = '🎋';
+          moodStatusText.textContent = 'Akdom Button Dhora Oshombhob!';
+          subPromptText.textContent = 'Etobar try korli tao Akdom laglo na... ebar ki korbi bhab! 😜';
+        }
+      }
+
+      // 1. Mobile Touch Handler: When finger touches down on "Akdom", slide a little immediately
+      // and cancel click so it looks & feels like the user tapped slightly off-target!
+      akdomBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const touch = e.touches[0] || e.changedTouches[0];
+        const x = touch ? touch.clientX : null;
+        const y = touch ? touch.clientY : null;
+        slideAkdomAway(x, y, true);
+      }, { passive: false });
+
+      // 2. Pointer Down / Click Fallback (for both mobile & desktop clicks)
+      akdomBtn.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'touch') {
+          e.preventDefault();
+          slideAkdomAway(e.clientX, e.clientY, true);
+          return;
+        }
+        e.preventDefault();
+        slideAkdomAway(e.clientX, e.clientY, true);
+      });
+
+      akdomBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        slideAkdomAway(e.clientX, e.clientY, true);
+      });
+
+      // 3. PC / Laptop Pointer Proximity Sensor: Move whenever the pointer comes near "Akdom"
+      document.addEventListener('mousemove', (e) => {
+        // Ignore if on result view
+        if (!questionView || questionView.classList.contains('hidden')) return;
+
+        // Eye tracking for Panda
+        const svgRect = document.getElementById('pandaSvg').getBoundingClientRect();
+        const pandaCenterX = svgRect.left + svgRect.width / 2;
+        const pandaCenterY = svgRect.top + svgRect.height / 2;
+        const eyeDx = Math.max(-4, Math.min(4, (e.clientX - pandaCenterX) / 45));
+        const eyeDy = Math.max(-3, Math.min(3, (e.clientY - pandaCenterY) / 45));
+        pupilsGroup.setAttribute('transform', `translate(${eyeDx.toFixed(1)}, ${eyeDy.toFixed(1)})`);
+
+        // Check distance from mouse pointer to Akdom button edges
+        const btnRect = akdomBtn.getBoundingClientRect();
+        const pad = 42; // Proximity threshold in px around the Akdom button
+        const nearX = e.clientX >= (btnRect.left - pad) && e.clientX <= (btnRect.right + pad);
+        const nearY = e.clientY >= (btnRect.top - pad) && e.clientY <= (btnRect.bottom + pad);
+
+        if (nearX && nearY) {
+          slideAkdomAway(e.clientX, e.clientY, false);
+        }
+      });
+
+      // Prevent keyboard focus trickery on Akdom
+      akdomBtn.addEventListener('focus', () => {
+        akdomBtn.blur();
+        const rect = akdomBtn.getBoundingClientRect();
+        slideAkdomAway(rect.left + rect.width / 2, rect.top + rect.height / 2, true);
+      });
+
+      // Confetti celebration when "No" is clicked
+      function launchConfetti() {
+        const emojis = ['🐼', '🎋', '🌸', '😴', '✨', '🎉', '💚'];
+        for (let i = 0; i < 28; i++) {
+          const el = document.createElement('div');
+          el.className = 'confetti-piece text-xl sm:text-2xl';
+          el.textContent = emojis[i % emojis.length];
+          el.style.left = Math.random() * 96 + 'vw';
+          el.style.animationDuration = (1.8 + Math.random() * 1.8) + 's';
+          el.style.animationDelay = (Math.random() * 0.35) + 's';
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 3800);
+        }
+      }
+
+      // 4. "No" Button Click Handler
+      noBtn.addEventListener('click', () => {
+        playWinSound();
+        launchConfetti();
+        finalSlipCount.textContent = `${missCount} time${missCount === 1 ? '' : 's'}`;
+        questionView.classList.add('hidden');
+        resultView.classList.remove('hidden');
+      });
+
+      // 5. Reset / Try Again Handler
+      tryAgainBtn.addEventListener('click', () => {
+        offsetX = 0;
+        offsetY = 0;
+        akdomBtn.style.transform = 'translate3d(0px, 0px, 0) rotate(0deg)';
+        noBtn.classList.remove('scale-105', 'scale-110', 'ring-4', 'ring-rose-300');
+        pandaSpeechBubble.textContent = '"Abar try korbi? Dekhi ebar Akdom-e angul laage kina! 🤭"';
+        resultView.classList.add('hidden');
+        questionView.classList.remove('hidden');
+        playBoingSound();
+      });
+    })();
+  </script>
+</body>
+</html>
